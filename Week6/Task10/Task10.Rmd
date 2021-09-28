@@ -1,0 +1,22 @@
+---
+title: "Task 10"
+author: "Samuel Burkart"
+date: "9/28/2021"
+output: 
+   html_document:
+  theme: united
+  code_folding: 'hide'
+      keep_md: true---
+---
+```{r}
+library(tidyverse)
+ToothGrowth
+?ToothGrowth
+head(ToothGrowth)
+```
+
+```{r}
+#create graphic showing relationship between tooth length and supplement type
+plot1 <- ggplot(data = ToothGrowth)
+```
+

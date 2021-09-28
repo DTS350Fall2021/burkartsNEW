@@ -1,0 +1,48 @@
+---
+title: "CaseStudy4"
+author: "Samuel Burkart"
+date: "9/20/2021"
+output: 
+  html_document:
+  theme: united
+  code_folding: 'hide'
+      keep_md: true---
+---
+
+```{r}
+#install and load packages
+install.packages("nycflights13")
+library(nycflights13)
+library(tidyverse)
+library(downloader)
+library(readxl)
+```
+
+### Answer to Question 2
+In order to determine which airport is the best to minimize chances of late arrivals, you can find the number of late arrivals per airport and look at which airport has the least amount of late arrivals. When inspecting the visualization below, we can tell that EWR has the least number of late arrivals. EWR is the best airport to minimize chances of late arrival.
+```{r}
+#investigate the database 
+head(flights)
+str(flights)
+?flights
+view(flights)
+```
+
+```{r}
+#Which origin aiport is best to minimize my chances of a late arrival when I am using Delta Airlines? 
+Delta <- filter(flights, carrier == "DL", )
+
+ggplot(Delta, aes(x = origin, y = arr_delay))+
+  geom_count()+
+    theme(axis.text.x=element_text(angle=90, hjust=1))
+```
+### Answer to Question 3
+In order to determine which airport is the worst for arrival times, it is helpful to view the number of delayed arrivals per airport. When this is done (shown in the visualization below) JFK has the most number of delayed arrivals per airport. 
+```{r}
+#Which airport is the worst airport for arrival time? 
+ggplot(flights, aes(x = origin, y = arr_delay))+
+  geom_count()+
+    theme(axis.text.x=element_text(angle=90, hjust=1))
+```
+
+

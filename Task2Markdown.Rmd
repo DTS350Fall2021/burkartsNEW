@@ -1,0 +1,69 @@
+---
+title: "Task2RBasics"
+author: "Samuel Burkart"
+date: "8/31/2021"
+output:
+  html_document:
+    theme: cerulean
+    keep_md: TRUE
+---
+#Packages
+```{r}
+library(knitr)
+```
+
+#Computations
+```{r}
+sin(pi/4)
+```
+
+```{r}
+x <- 10/3
+```
+###my_list = list(c('Barry', Sam, Dave, 'Charles')) Sam and Dave are not allowed because they are not in quotation marks. 
+
+```{r}
+MySequence <- seq(1,50,7)
+MySequence
+```
+
+```{r}
+my_vector <- c(1,5,12,31,19)
+my_vector
+```
+
+```{r}
+7 + 5 == 12
+```
+#	== tests if something is identically the same
+
+```{r}
+(7+4 = 12)|(5-4 = 1)
+```
+#You get this error because 7+4 equals 11
+
+
+#Exercise 1: The assignment variable is different than the variable they called
+
+#Exercise 2:
+```{r}
+library(tidyverse)
+
+ggplot(dota = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+
+fliter(mpg, cyl = 8)
+filter(diamond, carat > 3)
+```
+#dota is supposed to be data in line 3. fliter is supposed to be filter in line 6 of the code
+```{r}
+library(tidyverse)
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+
+filter(mpg, cyl == 8)
+filter(diamonds, carat > 3)
+```
+
+#Tools -> Keyboard Shortcuts Help

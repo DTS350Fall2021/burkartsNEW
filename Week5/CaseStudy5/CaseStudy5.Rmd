@@ -1,0 +1,105 @@
+---
+title: "R Notebook"
+output: 
+  html_document:
+  theme: united
+  code_folding: 'hide'
+      keep_md: true---
+---
+
+Brief Explanation:
+
+```{r}
+library(tidyverse)
+library(downloader)
+library(readxl)
+```
+
+```{r}
+#download data as tempfile
+gundata <- tempfile()
+download("https://raw.githubusercontent.com/fivethirtyeight/guns-data/master/full_data.csv", gundata, mode = "wb")
+mygundata <- read_csv(gundata)
+head(mygundata)
+str(mygundata)
+
+mygundatanew <- mygundata %>%
+  filter(age != "", intent != "")
+str(mygundatanew)
+```
+
+```{r}
+#first visualization
+agegroup <- mygundatanew %>%
+  mutate(agebracket = 
+           case_when(
+             age < 15 ~ "under 15",
+             age >= 15 & age <= 34 ~ "15-34",
+             age >=35 & age <= 64 ~ "35-64",
+             age >= 65 ~ "65+"),
+         agebracket = fct_relevel(agebracket, "under 15", "15-34", "35-64",
+                                "65+"))
+head(agegroup)
+
+
+plot1 <- ggplot(data = agegroup, aes(x = agebracket, fill = sex)) +
+  geom_bar() +
+  facet_wrap(~ intent, scales = "free") +
+  theme_bw() +
+  scale_fill_manual(values = c("palevioletred1", "royalblue3")) +
+  ggtitle("Intent of Shootings")
+plot1
+
+
+```
+
+```{r}
+#second visualization
+head(agegroup)
+plot2 <- ggplot(data = agegroup, aes(x = age, fill = intent)) +
+  geom_density(position = "fill", alpha = 0.5) +
+  facet_wrap(~ sex) +
+  theme_bw() +
+scale_fill_manual(values = c("aquamarine3", "coral", "cornflowerblue", "plum2"))
+plot2
+
+```
+
+```{r}
+#provide plot to show which races do the most shootings with what intent and in which season these shootings take place
+head(agegroup)
+tail(agegroup)
+str(mygundatanew)
+
+mygundatanew$month <- as.integer(mygundatanew$month)
+szngroup <- mygundatanew %>%
+  mutate(season = 
+           case_when(
+             month == 12 | month <= 2 ~ "Winter",
+             month >= 3 & month <= 5 ~ "Spring",
+             month >=6 & month <= 8 ~ "Summer",
+             month >= 9 & month <=11 ~ "Fall"),
+         )
+head(szngroup)
+tail(szngroup)
+
+plot4 <- ggplot(data = szngroup, aes(x = season, fill = race)) +
+  geom_bar() +
+  facet_wrap(~ intent, scales = "free") +
+  theme_bw() +
+  ggtitle("Intent of Shootings by Season & Race")
+plot4
+#commit pt 2.
+```
+The above visualization shows the intent of shootings by season and race. From these graphs we can tell that the majority of accidental, suicide, and undetermined shootings were committed by white people. We can also conclude that the majority of homicides were committed by black people. There is no clear trend of which seasons have the most shootings overall.
+```{r}
+#provide plot to show which education levels do the most shootings with what intent and in which season these shootings take place
+head(agegroup)
+plot5 <- ggplot(data = szngroup, aes(x = season, fill = education)) +
+  geom_bar() +
+  facet_wrap(~ intent, scales = "free") +
+  theme_bw() +
+  ggtitle("Intent of Shootings by Season & Education")
+plot5
+```
+The above visualization shows the intent of shootings by season and education level. These graphs make it clear that the majority of all shootings happen between education levels of Highschool/GED or below. Specifically, with suicides and undetermined intent shootings it is evident HS/GED education levels commit the most of these type of shootings. In accidental and homicide shootings it is much closer between HS/GED and less than HS education level shootings. 

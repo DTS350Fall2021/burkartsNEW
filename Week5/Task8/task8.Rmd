@@ -1,0 +1,67 @@
+---
+title: "Task8MarkD"
+author: "Samuel Burkart"
+date: "9/21/2021"
+output: 
+  html_document:
+      code_folding: 'hide'
+      keep_md: true
+---
+```{r}
+library(tidyverse)
+```
+
+```{r}
+#read in data
+
+urlfile = "https://raw.githubusercontent.com/hadley/r4ds/master/data/heights.csv"
+task8data <- read_csv(url(urlfile))
+```
+
+```{r}
+#make a new data set called HeightEd with the following categories
+head(task8data)
+tail(task8data)
+str(task8data)
+
+HeightEd <- task8data %>% 
+  mutate(level=
+  case_when(
+  ed >= 3 & ed <= 6 ~ "primary",
+  ed >= 7 & ed <= 11 ~ "secondary",
+  ed  == 12 ~ "highschoolgrad",
+  ed >= 13 & ed <= 15 ~ "associate",
+  ed == 16 ~ "bachelors",
+  ed >= 17 & ed <= 18 ~ "mastersdoctorate"
+))
+head(HeightEd)
+
+```
+
+```{r}
+#make a graphic to show the relationship between education and race.
+str(HeightEd)
+
+
+#initial graphic
+plot1 <- ggplot(HeightEd, aes(x = race, y = ed, fill = level)) +
+  geom_boxplot()
+plot1
+```
+
+```{r}
+#make another graphic to show the relationship between education and sex
+plot2 <- ggplot(HeightEd, aes(x = sex, y = ed, fill = level)) +
+  geom_boxplot()
+plot2
+```
+
+```{r}
+#make another graph that incorporates good labels... etc.
+plot3 <- ggplot(HeightEd, aes(x = sex, y = ed, fill = level)) +
+  geom_col()
+print(plot3 + ggtitle("Relationship Between Sex and Education"))
+plot3
+```
+
+It is a lot easier to work with and understand column/bar graphs than box plots. Organizing them with data makes a lot more sense. 

@@ -1,0 +1,83 @@
+---
+title: "Task4"
+author: "Samuel Burkart"
+date: "9/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Load Packages and read in the data. Create a tibble.
+```{r}
+library(tidyverse)
+iris_data <- iris 
+
+tibble(iris_data)
+```
+
+#arrange the iris data by Sepal.Length
+```{r}
+arrange_Sepal.Length <- arrange(iris_data, Sepal.Length)
+head(arrange_Sepal.Length, 10)
+```
+
+#Select Species and Petal.Width 
+```{r}
+testdat <- select(iris_data, Species, Petal.Width)
+
+```
+
+#Create species_mean
+```{r}
+species_mean <- group_by(iris_data, Species)
+species_mean <- summarize(species_mean, v1 = mean(Sepal.Length), v2 = mean(Sepal.Width), 
+                                                          v3 = mean(Petal.Length),
+                                                          v4 = mean(Petal.Width))
+species_mean
+```
+
+#Create iris_min
+```{r}
+iris_min <- filter(iris_data, Sepal.Width >= 3, Petal.Width != 2.5)
+head(iris_min)
+```
+
+#Create iris_size
+```{r}
+iris_size <- iris_data %>%
+  mutate(Sepal.Size = 
+           case_when(
+             Sepal.Length < 5 ~ "small",
+             Sepal.Length >= 5 & Sepal.Length < 6.5 ~ "medium",
+             Sepal.Length >= 6.5 ~ "large"))
+head(iris_size)   
+```
+
+#Create iris_rank
+```{r}
+iris_rank <- iris_data %>%
+  arrange(desc(Petal.Length))
+head(iris_rank)
+```
+
+#Use summarise_all()
+```{r}
+?summarise_all
+means_sd_species <- iris_data %>%
+  group_by(Species) %>%
+  summarize_all(list(Mean=mean, Std_dev = sd))
+
+means_sd_species
+```
+
+
+#Report:
+#Question 1: Is Uber making NYC rush hour traffic worse?
+#Question 2: How to predict restaurant success? 
+#Question 3: How to detect fake news?
+
+#Summary from 5 people: These handful of people seem relatively interested in my questions. The most inerest was in question 3.
+
+#Present your question to a professional: I do not know any professionals in these fiels and I do not have access to the people who have answered these questions.  

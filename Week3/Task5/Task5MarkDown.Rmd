@@ -1,0 +1,100 @@
+---
+title: "Task5"
+author: "Samuel Burkart"
+date: "9/9/2021"
+output: 
+  html_document:
+      code_folding: 'hide'
+      keep_md: true
+---
+
+```{r}
+library(tidyverse)
+library(downloader)
+library(readxl)
+```
+
+```{r}
+SoloData <- read_csv("solo-artist-followers.csv")
+BillboardData <- read_csv("billboard-hits.csv")
+view(SoloData)
+view(BillboardData)
+str(SoloData)
+str(BillboardData)
+
+#Change peak_date to column date
+BillboardData <- read_csv(
+  ("billboard-hits.csv"),
+col_types = cols(
+  peak_date = col_date("%m/%d/%y")
+  )
+)
+head(BillboardData)
+str(BillboardData)
+view(BillboardData)
+```
+#The data types imported correctly as characters.
+
+```{r}
+top_six <- BillboardData %>%
+  group_by(name) %>%
+  filter(n() > 6, band != "")
+view(top_six)
+```
+#This removed about 50 entries from the data set.
+
+```{r}
+top_bands <- BillboardData %>%
+  group_by(band) %>%
+  filter(name %in% top_six$band)
+head(top_bands)
+#Switch band names with the name data.
+top_bands <-rename(top_bands, band = name, name = band)
+head(top_bands)
+view(top_bands)
+```
+
+
+```{r}
+ggplot(data = top_six, aes(x = peak_date, y = peak_rank, color = name, group = name)) +
+  geom_point() +
+  geom_line() +
+  geom_point(data = top_bands, color ="black") +
+  geom_line(data = top_bands, color = "black", linetype = "dotted") +
+  facet_wrap(~ band, scales = "free") +
+  xlab("peak_rank") + ylab("peak_rank") +
+  theme_bw() 
+
+```
+#Report with 3 data sources
+1. a)https://www.stats.govt.nz/large-datasets/csv-files-for-download/
+  b) Stats nz has large amounts of data in downloadable form for csv files.
+  c) 
+```{r}
+#Reading in the data
+GDP_data <- read_csv("GDP-March-2021.csv")
+head(GDP_data)
+#Data types have read in correctly
+```
+2. a)https://www.stats.govt.nz/large-datasets/csv-files-for-download/
+  b) Stats nz has large amounts of data in downloadable form for csv files.
+  c)
+```{r}
+#Reading in the data
+productivity_data <- read_csv("Productivity-Stats.csv")
+head(productivity_data)
+#Data types have read in correctly
+```
+  3. a)https://www.stats.govt.nz/large-datasets/csv-files-for-download/
+    b) Stats nz has large amounts of data in downloadable form for csv files.
+    c)
+```{r}
+#Reading in the data
+trade_data <- read_csv("Trade-Effects.csv")
+head(trade_data)
+#Data types have read in correctly
+```
+    
+  
+
+
