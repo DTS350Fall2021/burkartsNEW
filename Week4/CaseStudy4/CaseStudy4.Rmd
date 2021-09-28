@@ -4,14 +4,14 @@ author: "Samuel Burkart"
 date: "9/20/2021"
 output: 
   html_document:
-  theme: united
-  code_folding: 'hide'
-      keep_md: true---
+    theme: united
+    code_folding: 'hide'
+    keep_md: true
 ---
 
 ```{r}
 #install and load packages
-install.packages("nycflights13")
+library(knitr)
 library(nycflights13)
 library(tidyverse)
 library(downloader)
