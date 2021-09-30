@@ -10,6 +10,8 @@ output:
 ---
 ```{r}
 library(tidyverse)
+install.packages(viridis)
+library(viridis)
 ToothGrowth
 ?ToothGrowth
 head(ToothGrowth)
@@ -17,6 +19,64 @@ head(ToothGrowth)
 
 ```{r}
 #create graphic showing relationship between tooth length and supplement type
-plot1 <- ggplot(data = ToothGrowth)
+plot1 <- ggplot(data = ToothGrowth, aes(x = len, fill = supp)) +
+  geom_density(position = "fill", alpha = 0.5) +
+    ggtitle("Correlation between length of tooth and supplement type") +
+  theme_bw() 
+
+plot1
+```
+I used geom density because it basically is showing a smooth version of what the histogram might look like. Using geom density with contrasting colors makes it easier to see the trends in the data. In this case, there seems to be no direct relationship between the tooth length and supplement type.
+
+```{r}
+#create graphic showing relationship between supplement type and dose in mg/day
+plot2 <- ggplot(data = ToothGrowth, aes (x = len, y = dose)) +
+  geom_col(position = "identity") +
+  ggtitle("Correlation between length of tooth and dosage in mg/day") +
+  theme_minimal()
+plot2
+
 ```
 
+```{r}
+#third plot
+head(mtcars)
+?mtcars
+
+plot3 <- ggplot(data = mtcars, aes (x = cyl, y = hp)) +
+  geom_smooth(position = "identity") +
+  ggtitle("Number of cylinders in relation to gross horsepower") +
+  theme_minimal()
+plot3
+```
+Geom smooth allows us to see a clear increase in this relationship. The cars with more cylinders have a greater horsepower.
+
+```{r}
+#fourth plot
+head(iris)
+smallest_p_width <- iris %>%
+  group_by(Species) %>%
+  filter(row_number((Petal.Width)) == 1)
+  
+smallest_p_length <- iris %>%
+  group_by(Species) %>%
+  filter(row_number((Petal.Length)) == 1)
+  
+  
+ggplot(data = iris, mapping = aes(x = Sepal.Length, 
+                                  y = Sepal.Width, 
+                                  color = Species,
+                                  shape = Species)) +
+  geom_point() +
+  geom_text(aes(color = Species, label = "Smallest Petal Width",vjust = "center", hjust = "left"), data = smallest_p_width, nudge_y=0.015) +
+  geom_point(size = 3, shape = 1, color = "black", data = smallest_p_width) +
+  geom_text(aes(color = Species, label = "Smallest Petal Length",vjust = "center", hjust = "left"), data = smallest_p_length, nudge_y=-0.015) +
+  geom_point(size = 3, shape = 1, color = "black", data = smallest_p_length) +
+  theme(legend.position = "bottom") +
+  labs(x = "Sepal Length (cm)",
+       y = "Sepal Width (cm)",
+       title = "Different Iris Species Have Different Sepal Sizes",
+       subtitle = "The Smallest Petal Sizes For Each Species Do Not Correspond To The Smallest Sepal Sizes")
+
+```
+This graph can show us that the smallest petal sizes for each species are not directly related to the smallest sepal sizes.
