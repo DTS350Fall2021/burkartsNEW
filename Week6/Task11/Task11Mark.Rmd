@@ -1,0 +1,45 @@
+---
+title: "Task11"
+author: "Samuel Burkart"
+date: "9/30/2021"
+output: 
+  html_document:
+  theme: united
+  code_folding: 'hide'
+      keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#investigate data
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+
+devtools::install_github("drsimonj/ourworldindata")
+head(financing_healthcare)
+tail(financing_healthcare)
+summary(financing_healthcare)
+
+#GOAL ==> summarize child mortality(child_mort) in a single plot
+#filter out the years before 1960 to get more current information <- 
+#group by continent and year 
+
+
+plot1 <- financing_healthcare %>% 
+  filter(year >= 1925 & !is.na(continent)) %>%
+  group_by(continent, year) %>% 
+  summarise(child_mort = mean(child_mort, na.rm = TRUE)) %>% 
+  ggplot(aes(x = year, y = child_mort, color = continent)) +
+  geom_line(size = 1) +
+  theme_bw() +
+  labs(title = "Child Mortality by Continent",
+   x = "",
+    y = "The Share of Children Dying Before Their Fifth Birthday")
+plot1
+
+```
+This graphic makes it easy to view the child mortality rates changing throughout time. I filtered out the years before 1925 as they were steady and had not started to decline yet. After 1925 the child mortality rates start declining rapidly in each continent. Africa has the highest child mortality rates and Europe has the lowest. This has not changed. Oceania appears to have decreased the most of any continent between the 1940s-1960s. One potential question would be to explore why Oceania had this rapid decline during this period. 
