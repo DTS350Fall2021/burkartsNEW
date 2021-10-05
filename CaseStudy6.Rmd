@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "Diamonds Are A Girl's Best Friend"
 author: "Samuel Burkart"
 date: "10/4/2021"
 output: 
@@ -127,10 +127,12 @@ grid.arrange(plot9,plot10, nrow=2)
 The number of big diamonds is far less than the number of small diamonds. Additionally, the number of small diamonds are far less expensive as the carat size determines the weight. The larger diamonds have more carats, and are more expensive. I expected this because we already knew the carats determine the price.
 
 ```{r}
-plot11 <- ggplot(diamonds, aes(x = price, y = carat)) + 
+plot11 <- ggplot(diamonds, aes(x = price, y = carat, color)) + 
   geom_col() +
   facet_wrap(~cut, ncol=5) +
   theme_bw() +
+  theme(axis.text.x = element_text(face="bold", 
+                           size=8, angle=45)) +
   coord_cartesian(ylim = c(0, 12), expand = TRUE) +
   labs(title = "Visualization of Cut, Carat, and Price")
 plot11
