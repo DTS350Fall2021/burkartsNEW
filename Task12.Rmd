@@ -1,0 +1,52 @@
+---
+title: "Task12"
+author: "Samuel Burkart"
+date: "10/6/2021"
+output: 
+  html_document:
+  theme: united
+  code_folding: 'hide'
+  keep_md: true
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(downloader)
+library(readxl)
+```
+
+```{r setup, include=FALSE}
+rating_data <- tempfile()
+download("https://raw.githubusercontent.com/fivethirtyeight/data/master/fandango/fandango_score_comparison.csv", rating_data, mode = "wb")
+
+my_rating <- read_csv(rating_data)
+
+str(my_rating)
+```
+
+```{r}
+#filter ratings
+new_rating <- my_rating %>%
+  select(FILM, Fandango_Ratingvalue, RT_norm_round, Metacritic_norm_round,
+         IMDB_norm_round) %>%
+  pivot_longer(2:5, names_to = "ratingSite", values_to = "rating") %>%
+  select(FILM, ratingSite, rating)
+view(new_rating)
+
+```
+
+```{r}
+#create a visualization of the first 20 ratings
+first_20_ratings <- head(new_rating, n = 20)
+
+view(first_20_ratings)
+
+plot1 <- ggplot(first_20_ratings, aes(x = rating, y = FILM, fill = ratingSite)) +
+  geom_col(position = "dodge") +
+  theme_bw() +
+  labs(title = "First 20 Ratings",
+   x = "Rating",
+    y = "Film")
+plot1 
+```
+I used geom_col to view the top 20 movie ratings. It is helpful to fill by the rating website in case you want to know where the rating came from. It is evident the rating from Fandango are typically higher than the other rating sites.
