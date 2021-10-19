@@ -21,6 +21,7 @@ library(readxl)
 library(ggplot2)
 library(tidyverse)
 library(foreign)
+library(downloader)
 
 male_height_dataXLSX <- tempfile()
 download("https://github.com/WJC-Data-Science/DTS350/blob/master/Height.xlsx?raw=true", male_height_dataXLSX, mode = "wb")
