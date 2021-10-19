@@ -1,0 +1,131 @@
+---
+title: "CaseStudy7"
+author: "Samuel Burkart"
+date: "10/11/2021"
+output: 
+  html_document:
+  theme: united
+  code_folding: 'hide'
+  keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#load libraries and read in the data
+library(readr)
+library(haven)
+library(readxl)
+library(ggplot2)
+library(tidyverse)
+library(foreign)
+
+male_height_dataXLSX <- tempfile()
+download("https://github.com/WJC-Data-Science/DTS350/blob/master/Height.xlsx?raw=true", male_height_dataXLSX, mode = "wb")
+male_height_dataXLSX <- read_xlsx(male_height_dataXLSX, skip = 2)
+
+head(male_height_dataXLSX)
+
+male_height_dataDTA<- tempfile()
+download("https://github.com/WJC-Data-Science/DTS350/blob/master/germanconscr.dta?raw=true", male_height_dataDTA, mode = "wb")
+male_height_dataDTA <- read_dta(male_height_dataDTA)
+
+head(male_height_dataDTA)
+
+male_height_dataDTA2<- tempfile()
+download("https://github.com/WJC-Data-Science/DTS350/blob/master/germanprison.dta?raw=true", male_height_dataDTA2, mode = "wb")
+male_height_dataDTA2 <- read_dta(male_height_dataDTA2)
+
+head(male_height_dataDTA2)
+
+male_height_dataDBF<- tempfile()
+download("https://github.com/WJC-Data-Science/DTS350/blob/master/Heights_south-east/B6090.DBF?raw=true", male_height_dataDBF, mode = "wb")
+male_height_dataDBF <- read.dbf(male_height_dataDBF, as.is = FALSE)
+
+head(male_height_dataDBF)
+
+male_height_dataCSV <- tempfile()
+download("https://raw.githubusercontent.com/hadley/r4ds/master/data/heights.csv", male_height_dataCSV, mode = "wb")
+male_height_dataCSV <- read_csv(male_height_dataCSV)
+head(male_height_dataCSV)
+
+head(male_heigh_dataCSV)
+
+male_height_dataSAV <- tempfile()
+download("http://www.ssc.wisc.edu/nsfh/wave3/NSFH3%20Apr%202005%20release/main05022005.sav", male_height_dataSAV, mode = "wb")
+male_height_dataSAV <- read_sav(male_height_dataSAV)
+
+head(male_height_dataSAV)
+
+
+#tidy the data
+
+worlddata <- male_height_dataXLSX %>%  pivot_longer(3:203, names_to = "years", values_to = "heights.cm", values_drop_na = TRUE) %>%  mutate(year_decade = years, 
+         height.in = heights.cm/2.54) %>%  separate(years, into = c("century", "decade"), sep = -2) %>%  separate(decade, into = c("decade", "year"), sep = -1)
+
+head(worlddata)
+
+germany_height <- worlddata %>% 
+  filter(`Continent, Region, Country` == "Germany")
+
+chett1 <- male_height_dataDTA %>%  mutate(birth_year = bdec, 
+         height.cm = height, 
+         height.in = height.cm/2.54, 
+         study.id = "male_height_dataDTA") %>%  select(birth_year, height.cm, height.in, study.id)
+
+head(chett1)
+
+chett2 <- male_height_dataDTA2 %>%
+  mutate(birth_year = bdec,
+         height.cm = height,
+         height.in = height.cm/ 2.54,
+         study.id = "male_height_dataDTA2") %>%
+  select(birth_year, height.in, height.cm, study.id)
+
+head(chett2)
+
+chett3 <- male_height_dataDBF %>%  mutate(height.in = CMETER/2.54,
+         height.cm = CMETER,
+         birth_year = SJ,
+         study.id = "male_height_dataDBF") %>%  select(height.in, height.cm, birth_year, study.id)
+
+head(chett3)
+
+chett4 <- male_height_dataCSV %>%  mutate(birth_year = 1950,
+         height.in = height,
+         height.cm = height.in*2.54,
+         study.id = "male_height_dataCSV") %>%  select(birth_year, height.cm, height.in, study.id)
+
+head(chett4)
+
+chett5 <- male_height_dataSAV %>%  mutate(birth_year = DOBY + 1900, 
+                                study.id = "male_height_dataSAV") %>%  select(birth_year, study.id)
+
+head(chett5)
+
+#combine them into one tidy data set
+charty <- bind_rows(chett1, chett2, chett3, chett4, chett5)
+
+head(charty)
+
+
+#make a plot w decade on the x-axis and height in inches on the y-axis
+plot1 <- worlddata %>% 
+  ggplot(aes(x = year_decade, y = height.in)) +
+  geom_point() +
+  geom_point(data=germany_height, color = "orange") +
+  theme_bw() 
+plot1
+
+#make small-multiples plot
+plot2 <-  charty %>%
+  ggplot(aes(x = birth_year, y = height.in, color = height.in)) +
+  geom_col() +
+  facet_wrap(~study.id, scales = "free") 
+plot2
+```
+The driving question which "The Scientific American" answers is "Are humans getting taller over the years?". In our plot 1, we show how height in inches is increasing by each decade. This is especially apparent when we analyze the height of Germany which is shown in orange. Throughout time, the trend of height is consistently rising. When we look at plot 2, the trend of height is unclear throughout time. 
+
+

@@ -1,0 +1,99 @@
+---
+title: "Task13"
+author: "Samuel Burkart"
+date: "10/11/2021"
+output: 
+  html_document:
+  theme: united
+  code_folding: 'hide'
+  keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#load libraries and read in the data
+library(readr)
+library(haven)
+library(readxl)
+library(ggplot2)
+library(tidyverse)
+
+dart_dataRDS <- tempfile()
+download("https://github.com/WJC-Data-Science/DTS350/blob/master/Dart_Expert_Dow_6month_anova/Dart_Expert_Dow_6month_anova.RDS?raw=true", dart_dataRDS, mode = "wb")
+dart_data_RDS <- read_rds(dart_dataRDS)
+
+dart_dataCSV <- tempfile()
+download("https://raw.githubusercontent.com/WJC-Data-Science/DTS350/master/Dart_Expert_Dow_6month_anova/Dart_Expert_Dow_6month_anova.csv", dart_dataCSV, mode = "wb")
+dart_data_CSV <- read_csv(dart_dataCSV)
+
+dart_dataDTA <- tempfile()
+download("https://github.com/WJC-Data-Science/DTS350/blob/master/Dart_Expert_Dow_6month_anova/Dart_Expert_Dow_6month_anova.dta?raw=true", dart_dataDTA, mode = "wb")
+dart_data_DTA <- read_dta(dart_dataDTA)
+
+
+dart_dataSAV <- tempfile()
+download("https://github.com/WJC-Data-Science/DTS350/blob/master/Dart_Expert_Dow_6month_anova/Dart_Expert_Dow_6month_anova.sav?raw=true", dart_dataSAV, mode = "wb")
+dart_data_SAV <- read_sav(dart_dataSAV)
+
+
+dart_dataXLSX <- tempfile()
+download("https://github.com/WJC-Data-Science/DTS350/blob/master/Dart_Expert_Dow_6month_anova/Dart_Expert_Dow_6month_anova.xlsx?raw=true", dart_dataXLSX, mode = "wb")
+dart_data_XLSX <- read_xlsx(dart_dataXLSX)
+
+
+all_equal(dart_data_RDS, dart_data_CSV, dart_data_DTA, convert = TRUE)
+all_equal(dart_data_CSV, dart_data_SAV, dart_data_XLSX, convert = TRUE)
+```
+
+```{r}
+head(dart_data_CSV)
+plot1 <- ggplot(dart_data_CSV, aes(x = variable, y = value, color = variable)) + 
+  geom_jitter()
+plot1
+
+plot2 <- ggplot(dart_data_CSV, aes(x = variable, y = value, fill=variable, color =variable)) +
+  geom_boxplot() 
+plot2
+
+plot3 <- ggplot(dart_data_CSV, aes(x = contest_period, y = value, fill=variable, color =variable)) +
+  geom_line(aes(group = variable)) 
+plot3
+```
+
+```{r}
+#Tidy the data
+head(dart_data_CSV)
+tail(dart_data_CSV)
+PivotWiderDartcsv <- dart_data_CSV %>%
+  filter(variable == 'DJIA') %>%
+  mutate(contest_period = str_replace_all(contest_period, '19', '_19'),
+         contest_period = str_replace(contest_period, 'Febuary', 'February'),
+         contest_period = str_replace(contest_period, 'Dec._1993', 'December_1993')) %>%
+  separate(contest_period, into = c("Month", "year_end"), sep = '-') %>%
+  separate(year_end, into = c("Month", "year"), sep = '_') %>%
+  pivot_wider(names_from = "year", values_from = "value") %>%
+  arrange(factor(Month, levels = month.name)) %>%
+  select(-variable)
+view(PivotWiderDartcsv)
+
+#save as rds file
+saveRDS(PivotWiderDartcsv, file = "PivotWiderDartcsv.rds")
+  
+```
+```{r}
+#create new graph
+PivotWiderDartcsv %>%
+  pivot_longer(2:10, names_to = "year", values_to = "return", values_drop_na = TRUE) %>%
+  ggplot(aes(x = year, y = return, group = Month)) +
+    geom_point(aes(color = Month)) +
+    geom_line(aes(color = Month)) +
+    facet_wrap(~Month, scales = 'free_x') +
+    labs(x = 'Year', y = 'Return' , title = 'Dow Jones returns 1990:1998') +
+    theme_bw() +
+    theme(legend.position = 'none', axis.text.x = element_text(angle = 45))
+
+```
+My plot1 shows the jittered returns by each variable. My plot2 shows the returns by each variable in a boxplot format. My plot3 shows the returns of each variable across the 6 month time slots in a linear format.
