@@ -25,7 +25,7 @@ tail(my_wash_data)
 ```
 
 ```{r}
-#convert times to mountain time and create new hourly grouping variable
+#convert times to mountain time and create new hourly grouped variable
 view(OlsonNames())
 #use US/Mountain
 
