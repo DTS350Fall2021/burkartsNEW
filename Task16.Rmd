@@ -1,0 +1,14 @@
+---
+title: "Task16"
+author: "Samuel Burkart"
+date: "11/1/2021"
+output: 
+  html_document:
+  theme: united
+  code_folding: 'hide'
+  keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```

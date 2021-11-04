@@ -1,0 +1,65 @@
+---
+title: "Task16"
+author: "Samuel Burkart"
+date: "11/1/2021"
+output: 
+  html_document:
+  theme: united
+  code_folding: 'hide'
+  keep_md: true
+---
+
+```{r}
+#load libraries and read in the data
+library(tidyverse)
+library(downloader)
+library(riem)
+
+wash_data <- tempfile()
+download("https://github.com/WJC-Data-Science/DTS350/raw/master/carwash.csv", wash_data, mode = "wb")
+my_wash_data <- read_csv(wash_data)
+
+head(my_wash_data)
+tail(my_wash_data)
+
+```
+
+```{r}
+#convert times to mountain time and create new hourly grouping variable
+view(OlsonNames())
+#use US/Mountain
+
+Mtn_Time<- with_tz(my_wash_data, tzone="US/Mountain")
+head(Mtn_Time)
+
+Mtn_Time1 <- Mtn_Time %>%
+  mutate(hour = ceiling_date(time, "hour"))
+head(Mtn_Time1)
+
+```
+```{r}
+#get matching temperatures
+sales_total <- Mtn_Time1 %>%
+  group_by(hour) %>%
+  summarise(across(amount, sum))
+head(sales_total)
+```
+```{r}
+#get matching temperatures
+weather <- riem_measures(station = "RXE", date_start = '2016-05-13', date_end = '2016-07-18') %>%
+  with_tz(tzone="US/Mountain") %>%
+  filter(tmpf != "")%>%
+  mutate(hour = ceiling_date(valid, "hour")) %>%
+  select(hour, tmpf)
+```
+
+```{r}
+#merge the two datasets and plot the merged data set
+head(sales_total)
+merge(sales_total, weather, by = "hour")%>%
+  arrange(hour) %>%
+  ggplot(aes(x = hour, y = amount)) +
+  geom_line() 
+
+```
+
