@@ -1,0 +1,147 @@
+---
+title: "CaseStudy9"
+author: "Samuel Burkart"
+date: "11/2/2021"
+output: 
+  html_document:
+  theme: united
+  code_folding: 'hide'
+  keep_md: true
+---
+
+```{r}
+#load in libraries
+library(readr)
+library(haven)
+library(readxl)
+library(ggplot2)
+library(tidyverse)
+library(foreign)
+library(downloader)
+```
+
+```{r}
+#read in data
+my_data <- tempfile()
+download("https://github.com/WJC-Data-Science/DTS350/raw/master/sales.csv", my_data, mode = "wb")
+my_data <- read_csv(my_data, skip = 0)
+head(my_data)
+
+#use US/Mountain
+
+Mtn_Time<- with_tz(my_data, tzone="US/Mountain")
+head(Mtn_Time)
+
+#create correct time aggregations
+Mtn_Time1 <- Mtn_Time %>%
+  mutate(hour = ceiling_date(Time, "hour")) %>%
+  mutate(day = ceiling_date(Time, "day")) %>%
+  mutate(week = ceiling_date(Time, "week")) %>%
+  mutate(month = ceiling_date(Time, "month"))%>%
+  mutate(Hour = hour(hour)) %>%
+  group_by(Name, Hour) %>%
+  summarise(across(Amount,sum))
+head(Mtn_Time1)
+tail(Mtn_Time1)
+
+```
+```{r}
+#recommend hours of operation
+plot1 <- ggplot(Mtn_Time1, aes(x = Hour, y = Amount, color = Name)) + 
+  geom_point() +
+  geom_line () +
+  facet_wrap(~Name, scales = 'free')+
+  labs(x = 'Hour', y = 'Total Sales' , title = 'Sales per Hour') +
+  theme_bw()
+plot1
+```
+```{r}
+#group_by daily
+Mtn_Time2 <- Mtn_Time %>%
+  mutate(hour = ceiling_date(Time, "hour")) %>%
+  mutate(day = ceiling_date(Time, "day")) %>%
+  mutate(week = ceiling_date(Time, "week")) %>%
+  mutate(month = ceiling_date(Time, "month"))%>%
+  mutate(Day = wday(day)) %>%
+  group_by(Name, Day) %>%
+  summarise(across(Amount,sum))
+head(Mtn_Time2)
+tail(Mtn_Time2)
+```
+```{r}
+#plot for days 
+plot2 <- ggplot(Mtn_Time2, aes(x = Day, y = Amount, color = Name)) + 
+  geom_point() +
+  geom_line () +
+  facet_wrap(~Name, scales = 'free')+
+  labs(x = 'Day', y = 'Total Sales' , title = 'Sales per Day') +
+  theme_bw()
+plot2
+```
+```{r}
+#group_by weekly
+Mtn_Time3 <- Mtn_Time %>%
+  mutate(hour = ceiling_date(Time, "hour")) %>%
+  mutate(day = ceiling_date(Time, "day")) %>%
+  mutate(week = ceiling_date(Time, "week")) %>%
+  mutate(month = ceiling_date(Time, "month"))%>%
+  mutate(Week = week(week)) %>%
+  group_by(Name, Week) %>%
+  summarise(across(Amount,sum))
+head(Mtn_Time3)
+tail(Mtn_Time3)
+```
+```{r}
+#plot for weeks 
+plot3 <- ggplot(Mtn_Time3, aes(x = Week, y = Amount, color = Name)) + 
+  geom_point() +
+  geom_line () +
+  facet_wrap(~Name, scales = 'free')+
+  labs(x = 'Week', y = 'Total Sales' , title = 'Sales per Week') +
+  theme_bw()
+plot3
+```
+```{r}
+#group_by monthly
+Mtn_Time4 <- Mtn_Time %>%
+  mutate(hour = ceiling_date(Time, "hour")) %>%
+  mutate(day = ceiling_date(Time, "day")) %>%
+  mutate(week = ceiling_date(Time, "week")) %>%
+  mutate(month = ceiling_date(Time, "month"))%>%
+  mutate(Month = month(month)) %>%
+  group_by(Name, Month) %>%
+  summarise(across(Amount,sum))
+head(Mtn_Time4)
+tail(Mtn_Time4)
+```
+```{r}
+#plot for months 
+plot4 <- ggplot(Mtn_Time4, aes(x = Month, y = Amount, color = Name)) + 
+  geom_point() +
+  geom_line () +
+  facet_wrap(~Name, scales = 'free')+
+  labs(x = 'Month', y = 'Total Sales' , title = 'Sales per Month') +
+  theme_bw()
+plot4
+```
+```{r}
+#total sales
+total_sales <- Mtn_Time %>%
+  mutate(hour = ceiling_date(Time, "hour")) %>%
+  mutate(day = ceiling_date(Time, "day")) %>%
+  mutate(week = ceiling_date(Time, "week")) %>%
+  mutate(month = ceiling_date(Time, "month"))%>%
+  group_by(Name) %>%
+  summarise(across(Amount,sum))
+head(total_sales)
+```
+```{r}
+#total sales plot
+plot5 <- ggplot(total_sales, aes(x = Name, y = Amount, fill = Name)) + 
+  geom_col()+
+  labs(x = 'Company Name', y = 'Total Sales' , title = 'Total Sales per Company') +
+  theme_bw()
+plot5
+```
+I would recommend that HotDiggity be the company we invest in. They have proven that they are the best company over this 3 month period as their total sales were the highest of any company. Additionally, HotDiggity had the most concentrated sales for a specific time of day. This means they could potentially stay open for a shorter amount of time, thus reducing their cost. This would lead to greater revenue. 
+
