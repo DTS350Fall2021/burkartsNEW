@@ -1,0 +1,51 @@
+---
+title: "CaseStudy10"
+author: "Samuel Burkart"
+date: "11/8/2021"
+output: html_document
+---
+
+```{r}
+#load libraries
+library(tidyquant) 
+library(tidyverse) 
+library(lubridate) 
+library(timetk)
+library(dygraphs)
+```
+
+```{r}
+stock_tickers <- c("AMZN", "NKE", "GM", "F", "PLAY", "CMG", "CBRL", "MCD", "HMSNF", "BNDSF")
+
+#stock comparison
+
+calculator <- function(tickers){
+  stocks <- tq_get(tickers, get = "stock.prices", from = start, to = end)
+  stocks_chart <- stocks %>%
+  select(symbol, date, adjusted) %>%
+  pivot_wider(names_from = symbol, values_from = adjusted) %>%
+  tk_xts(date_var = date)
+dygraph(stocks_chart)
+}
+
+calculator(stock_tickers)
+```
+
+
+```{r}
+
+stock_volume <- function(tickers) {
+  tq_get(tickers, get = "stock.prices", from = today() - years(5), to = today())  %>%
+    ggplot(aes(x = date, y = volume, color = symbol)) + 
+    geom_line() +
+    labs(title = "Volume over the last 5 years", y = " ", x = "") +
+    facet_wrap(~symbol, scales = "free_y") +
+    theme_tq()
+}
+
+
+
+stock_volume(stock_tickers)
+```
+
+Based off of my first graphic I have determined there are several promising possibilities with these stocks. Chipotle Mexican Grill is the stock I would invest the most in as they are pretty high value and they appear to be increasing in value based off of the past five years. McDonalds has consistently gone up as well, so I would invest my money there as well. The volume of the stocks helps one to determine when you would buy or sell your stocks. If it appears the stock volume is rising you want to get in and buy early. That way, you can potentially sell near the peak before the price drops. A question to help investors here is "When will the stock volume jump?".

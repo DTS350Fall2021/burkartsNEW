@@ -1,0 +1,35 @@
+---
+title: "Task18"
+author: "Samuel Burkart"
+date: "11/8/2021"
+output: html_document
+---
+
+```{r}
+#load libraries
+library(tidyquant) 
+library(tidyverse) 
+library(lubridate) 
+library(timetk)
+library(dygraphs)
+```
+
+```{r}
+#time frame
+start <- today() - years(1)
+end <- today()
+
+stocks <- tq_get(c('PEP', 'ZM', 'ADBE', 'K', 'AABB', 'AICAF'), get = 
+ "stock.prices", from = start, to = end)
+
+#stock comparison
+
+stocks_chart <- stocks %>%
+  select(symbol, date, adjusted) %>%
+  pivot_wider(names_from = symbol, values_from = adjusted) %>%
+  tk_xts(date_var = date)
+
+dygraph(stocks_chart)
+
+```
+
