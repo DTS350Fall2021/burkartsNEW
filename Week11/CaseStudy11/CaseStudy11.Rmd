@@ -1,0 +1,54 @@
+---
+title: "CaseStudy11"
+author: "Samuel Burkart"
+date: "11/15/2021"
+output: html_document
+---
+
+```{r}
+#load libraries and read in data
+library(tidyverse)
+library(downloader)
+library(USAboundaries)
+library(plotly)
+
+my_csv_data <- tempfile()
+download("https://raw.githubusercontent.com/WJC-Data-Science/DTS350/master/permits.csv", 
+my_csv_data, mode = "wb")
+my_housing_data <- read_csv(my_csv_data)
+```
+```{r}
+#merge data frames
+my_codes <- state_codes %>%
+  mutate(state = as.integer(state_code))
+
+my_permits <- merge(my_housing_data, my_codes,by = "state") %>%
+  group_by(state_name,year) %>%
+  summarise(across(value, sum))
+```
+```{r}
+#num of permits by state (1980-2010)
+
+plot1 <- ggplot(data = my_permits, aes(x = year, y = value/1000, color = state_name)) +
+    geom_point(aes(text = paste("State:",state_name))) +
+    geom_line() +
+    geom_vline(xintercept = 2008, linetype = 'dotted') +
+    labs(x = '', y = 'Number of Permits (every 1000)', title = 'Permits by State') +
+    theme_bw() +
+    theme(legend.position = 'none')
+
+ggplotly(plot1)
+```
+```{r}
+#num of permits in MO (1980-2010)
+my_permits %>%
+  filter(state_name == 'Missouri') %>%
+  ggplot(aes(x = year, y = value/1000)) +
+    geom_point() +
+    geom_line() +
+    geom_vline(xintercept = 2008, linetype = 'dotted') +
+    labs(x = '', y = 'Number of Permits(per 1000)', title = 'Permits in Missouri') +
+    theme_bw() +
+    theme(legend.position = 'none')
+```
+
