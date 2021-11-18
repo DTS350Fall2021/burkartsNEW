@@ -1,0 +1,67 @@
+---
+title: "Task21"
+author: "Samuel Burkart"
+date: "11/17/2021"
+output: html_document
+---
+
+```{r}
+#load packages
+library(USAboundaries)
+library(USAboundariesData)
+library(maps)
+library(sf)
+library(lwgeom)
+```
+
+```{r}
+#create map
+states <- sf::st_as_sf(map("state", plot = FALSE, fill = TRUE))
+Idaho <- us_counties(states = "ID")
+```
+
+```{r}
+#top 3 cities from each state
+top3 <- cities %>%
+  filter(state_name != "Alaska", state_name != "Hawaii") %>%
+  group_by(state_name)%>%
+  arrange(desc(population))%>%
+  slice(1:3)
+
+```
+
+```{r}
+#rename geometry
+latlong <- top3%>%
+  mutate(coords = geometry)%>%
+  separate(coords, into = c('long', 'lat'), sep = ',')%>%
+  separate(long, into = c('random', 'Long'), sep = 2)%>%
+  separate(lat, into = c('Lat', 'random2'), sep = -1)%>%
+  mutate(Lat = as.numeric(Lat), Long = as.numeric(Long))
+```
+
+
+```{r}
+#top, second, and third city name for each state
+top_city <- top3 %>%
+  slice(1:1)
+
+second_city <- top3 %>%
+  slice(2:2)
+
+third_city <- top3 %>%
+  slice(3:3)
+```
+
+```{r}
+leaflet() %>%
+  addTiles()%>%
+  addPolygons(data = states, fillColor = "white", weight = 1, opacity = 1, color = "grey", fillOpacity = 0.5) %>%
+  addPolygons(data = Idaho, fillColor = "white", weight = 1, opacity = 1, color = "grey", fillOpacity = 0.5) %>%
+  addCircleMarkers(data = top_city, radius = 4, color = 'lightblue', stroke = FALSE)%>%
+    addCircleMarkers(data = second_city, radius = 4, color = 'blue', stroke = FALSE)%>%
+    addCircleMarkers(data = third_city, radius = 4, color = 'navy', stroke = FALSE)%>%
+  addMarkers(data = latlong, lat = ~Lat, lng = ~Long, popup = ~as.character(population), label = ~city)
+
+```
+
