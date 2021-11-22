@@ -12,8 +12,8 @@ library(readxl)
 ```
 
 ```{r}
-SoloData <- read_csv("solo-artist-followers.csv")
-BillboardData <- read_csv("billboard-hits.csv")
+SoloData <- read_csv("/Users/samuel/Library/Mobile Documents/com~apple~CloudDocs/SDB School/DTS 350/burkartsNEW/Week3/Task5/solo-artist-followers.csv")
+BillboardData <- read_csv("/Users/samuel/Library/Mobile Documents/com~apple~CloudDocs/SDB School/DTS 350/burkartsNEW/Week3/Task5/billboard-hits.csv")
 view(SoloData)
 view(BillboardData)
 str(SoloData)
@@ -21,7 +21,7 @@ str(BillboardData)
 
 #Change peak_date to column date
 BillboardData <- read_csv(
-  ("billboard-hits.csv"),
+  ("/Users/samuel/Library/Mobile Documents/com~apple~CloudDocs/SDB School/DTS 350/burkartsNEW/Week3/Task5/billboard-hits.csv"),
 col_types = cols(
   peak_date = col_date("%m/%d/%y")
   )
@@ -61,6 +61,4 @@ ggplot(data = top_six, aes(x = peak_date, y = peak_rank, color = name, group = n
   facet_wrap(~ band, scales = "free") +
   xlab("peak_rank") + ylab("peak_rank") +
   theme_bw() +
-  labs(title = 'Year: {peak_date}', x = 'GDP per capita', y = 'peak_rank') +
-  transition_time(year) +
-  ease_aes('linear') 
+  transition_time(peak_date) 
